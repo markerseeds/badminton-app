@@ -131,6 +131,38 @@ const App = () => {
       recentTeammates: [],
       recentOpponents: [],
     },
+    {
+      id: 17,
+      name: "Melvin",
+      skill: 8,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 18,
+      name: "Korby",
+      skill: 4,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 19,
+      name: "Kenzo",
+      skill: 5,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 18,
+      name: "Riana",
+      skill: 6,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
   ]);
 
   const [matches, setMatches] = useState([]);
