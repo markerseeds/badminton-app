@@ -122,8 +122,10 @@ const App = () => {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
 
   // Calculate weight for fair distribution (inverse of times played)
-  const calculateWeight = (timesPlayed) => {
-    return Math.pow(0.5, timesPlayed); // halves weight each time played
+  const calculateWeight = (timesPlayed, minTimesPlayed) => {
+    // The player(s) with minTimesPlayed get weight 1 (100%)
+    // Others get weight halved for each extra game played beyond minTimesPlayed
+    return Math.pow(0.5, timesPlayed - minTimesPlayed);
   };
 
   // Calculate team skill average
@@ -172,23 +174,6 @@ const App = () => {
     return true;
   };
 
-  // Weighted random selection
-  const weightedRandomSelect = (availablePlayers) => {
-    const totalWeight = availablePlayers.reduce(
-      (sum, player) => sum + calculateWeight(player.timesPlayed),
-      0
-    );
-
-    let random = Math.random() * totalWeight;
-
-    for (let player of availablePlayers) {
-      random -= calculateWeight(player.timesPlayed);
-      if (random <= 0) return player;
-    }
-
-    return availablePlayers[availablePlayers.length - 1];
-  };
-
   const getPlayersCurrentlyPlaying = () => {
     const ongoingMatches = matches.filter((m) => !m.completed);
     const playingPlayerNames = new Set();
@@ -210,28 +195,30 @@ const App = () => {
   // Generate all possible teams
   const generatePossibleTeams = (availablePlayers) => {
     const teams = [];
+    const minTimesPlayed = Math.min(
+      ...availablePlayers.map((p) => p.timesPlayed)
+    );
 
     for (let i = 0; i < availablePlayers.length; i++) {
       for (let j = i + 1; j < availablePlayers.length; j++) {
         const player1 = availablePlayers[i];
         const player2 = availablePlayers[j];
 
-        // Only pair players with similar play counts (difference <= 2)
         if (Math.abs(player1.timesPlayed - player2.timesPlayed) > 2) continue;
 
         if (canBeTeammates(player1, player2)) {
+          const weight1 = calculateWeight(player1.timesPlayed, minTimesPlayed);
+          const weight2 = calculateWeight(player2.timesPlayed, minTimesPlayed);
+
           teams.push({
             player1,
             player2,
             skill: getTeamSkill(player1, player2),
-            weight:
-              calculateWeight(player1.timesPlayed) +
-              calculateWeight(player2.timesPlayed),
+            weight: weight1 + weight2,
           });
         }
       }
     }
-
     return teams;
   };
 
@@ -248,6 +235,16 @@ const App = () => {
       return;
     }
 
+    // Find minimum times played among available players
+    const minTimesPlayed = Math.min(
+      ...availablePlayers.map((p) => p.timesPlayed)
+    );
+
+    // Players who must be included (minimum times played)
+    const mustIncludePlayers = availablePlayers.filter(
+      (p) => p.timesPlayed === minTimesPlayed
+    );
+
     // Generate all possible teams
     const possibleTeams = generatePossibleTeams(availablePlayers);
 
@@ -258,23 +255,34 @@ const App = () => {
       return;
     }
 
-    // Try to find compatible teams
     let team1 = null;
     let team2 = null;
     let attempts = 0;
     const maxAttempts = 100;
 
     while (attempts < maxAttempts && (!team1 || !team2)) {
-      // Select first team using weighted random
-      // Calculate total weight of all possible teams
-      const totalWeight = possibleTeams.reduce(
+      // Weighted random selection for team1, but only teams that include at least one mustIncludePlayer
+      const filteredTeamsForTeam1 = possibleTeams.filter((team) => {
+        return mustIncludePlayers.some(
+          (p) => p.id === team.player1.id || p.id === team.player2.id
+        );
+      });
+
+      if (filteredTeamsForTeam1.length === 0) {
+        alert(
+          "Cannot find teams including players with least times played. Try resetting recent teammates/opponents."
+        );
+        return;
+      }
+
+      // Calculate total weight of filtered teams
+      const totalWeight = filteredTeamsForTeam1.reduce(
         (sum, team) => sum + team.weight,
         0
       );
 
-      // Weighted random selection for team1
       let random = Math.random() * totalWeight;
-      for (let team of possibleTeams) {
+      for (let team of filteredTeamsForTeam1) {
         random -= team.weight;
         if (random <= 0) {
           team1 = team;
@@ -282,9 +290,8 @@ const App = () => {
         }
       }
 
-      // Find compatible opposing teams
+      // Find compatible opposing teams (no shared players and canTeamsPlay)
       const compatibleTeams = possibleTeams.filter((team) => {
-        // Make sure teams don't share players
         const team1PlayerIds = [team1.player1.id, team1.player2.id];
         const team2PlayerIds = [team.player1.id, team.player2.id];
         const hasSharedPlayers = team1PlayerIds.some((id) =>
@@ -310,7 +317,6 @@ const App = () => {
       return;
     }
 
-    // Create match
     const newMatch = {
       id: matches.length + 1,
       team1: {
@@ -629,7 +635,13 @@ const App = () => {
             </h2>
             <div className="space-y-3">
               {players.map((player) => {
-                const weight = calculateWeight(player.timesPlayed);
+                const minTimesPlayed = Math.min(
+                  ...players.map((p) => p.timesPlayed)
+                );
+                const weight = calculateWeight(
+                  player.timesPlayed,
+                  minTimesPlayed
+                );
                 return (
                   <div
                     key={player.id}
