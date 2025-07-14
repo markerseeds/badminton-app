@@ -3,20 +3,118 @@ import { Users, Play, Trophy, RotateCcw, Plus, Trash2 } from "lucide-react";
 
 const App = () => {
   const [players, setPlayers] = useState([
-    { id: 1, name: "Mark", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 2, name: "Charles", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 3, name: "Mau", skill: 2, timesPlayed: 0, recentOpponents: [] },
-    { id: 4, name: "Kevin", skill: 1, timesPlayed: 0, recentOpponents: [] },
-    { id: 5, name: "Faith", skill: 1, timesPlayed: 0, recentOpponents: [] },
-    { id: 6, name: "Matthew", skill: 2, timesPlayed: 0, recentOpponents: [] },
-    { id: 7, name: "Aaron", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 8, name: "Camille", skill: 2, timesPlayed: 0, recentOpponents: [] },
-    { id: 9, name: "Sugar", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 10, name: "Raizza", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 11, name: "Danika", skill: 1, timesPlayed: 0, recentOpponents: [] },
-    { id: 12, name: "Carla", skill: 2, timesPlayed: 0, recentOpponents: [] },
-    { id: 13, name: "Allen", skill: 3, timesPlayed: 0, recentOpponents: [] },
-    { id: 14, name: "Corinne", skill: 3, timesPlayed: 0, recentOpponents: [] },
+    {
+      id: 1,
+      name: "Mark",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 2,
+      name: "Charles",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 3,
+      name: "Mau",
+      skill: 2,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 4,
+      name: "Kevin",
+      skill: 1,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 5,
+      name: "Faith",
+      skill: 1,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 6,
+      name: "Matthew",
+      skill: 2,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 7,
+      name: "Aaron",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 8,
+      name: "Camille",
+      skill: 2,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 9,
+      name: "Sugar",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 10,
+      name: "Raizza",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 11,
+      name: "Danika",
+      skill: 1,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 12,
+      name: "Carla",
+      skill: 2,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 13,
+      name: "Allen",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 14,
+      name: "Corinne",
+      skill: 3,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
   ]);
 
   const [matches, setMatches] = useState([]);
@@ -28,21 +126,48 @@ const App = () => {
     return 1 / (timesPlayed + 1);
   };
 
-  // Check if two players can be matched
-  const canMatch = (player1, player2) => {
-    // Don't match player with themselves
+  // Calculate team skill average
+  const getTeamSkill = (player1, player2) => {
+    return (player1.skill + player2.skill) / 2;
+  };
+
+  // Check if two players can be teammates
+  const canBeTeammates = (player1, player2) => {
+    // Don't team with themselves
     if (player1.id === player2.id) return false;
 
-    // Check skill level compatibility (within 2 levels)
-    const skillDiff = Math.abs(player1.skill - player2.skill);
-    if (skillDiff > 2) return false;
-
-    // Check if they've played recently (last 2 opponents)
+    // Check if they've been teammates recently (last 2 teammates)
     if (
-      player1.recentOpponents.includes(player2.id) ||
-      player2.recentOpponents.includes(player1.id)
+      player1.recentTeammates.includes(player2.id) ||
+      player2.recentTeammates.includes(player1.id)
     )
       return false;
+
+    return true;
+  };
+
+  // Check if two teams can play against each other
+  const canTeamsPlay = (team1, team2) => {
+    // Check skill level compatibility (team averages within 1.5 levels)
+    const team1Skill = getTeamSkill(team1.player1, team1.player2);
+    const team2Skill = getTeamSkill(team2.player1, team2.player2);
+    const skillDiff = Math.abs(team1Skill - team2Skill);
+    if (skillDiff >= 1) return false;
+
+    // Check if any player has played against any player from the other team recently
+    const team1Players = [team1.player1, team1.player2];
+    const team2Players = [team2.player1, team2.player2];
+
+    for (let p1 of team1Players) {
+      for (let p2 of team2Players) {
+        if (
+          p1.recentOpponents.includes(p2.id) ||
+          p2.recentOpponents.includes(p1.id)
+        ) {
+          return false;
+        }
+      }
+    }
 
     return true;
   };
@@ -64,37 +189,125 @@ const App = () => {
     return availablePlayers[availablePlayers.length - 1];
   };
 
-  // Generate a fair match
-  const generateMatch = () => {
-    const availablePlayers = players.filter((p) => p.name.trim() !== "");
+  const getPlayersCurrentlyPlaying = () => {
+    const ongoingMatches = matches.filter((m) => !m.completed);
+    const playingPlayerNames = new Set();
 
-    if (availablePlayers.length < 2) {
-      alert("Need at least 2 players to generate a match!");
-      return;
+    ongoingMatches.forEach((match) => {
+      playingPlayerNames.add(match.team1.player1);
+      playingPlayerNames.add(match.team1.player2);
+      playingPlayerNames.add(match.team2.player1);
+      playingPlayerNames.add(match.team2.player2);
+    });
+
+    const playingPlayerIds = players
+      .filter((p) => playingPlayerNames.has(p.name))
+      .map((p) => p.id);
+
+    return new Set(playingPlayerIds);
+  };
+
+  // Generate all possible teams
+  const generatePossibleTeams = (availablePlayers) => {
+    const teams = [];
+
+    for (let i = 0; i < availablePlayers.length; i++) {
+      for (let j = i + 1; j < availablePlayers.length; j++) {
+        const player1 = availablePlayers[i];
+        const player2 = availablePlayers[j];
+
+        if (canBeTeammates(player1, player2)) {
+          teams.push({
+            player1,
+            player2,
+            skill: getTeamSkill(player1, player2),
+            weight:
+              calculateWeight(player1.timesPlayed) +
+              calculateWeight(player2.timesPlayed),
+          });
+        }
+      }
     }
 
-    // Select first player using weighted random
-    const player1 = weightedRandomSelect(availablePlayers);
+    return teams;
+  };
 
-    // Find compatible opponents for player1
-    const compatibleOpponents = availablePlayers.filter((p) =>
-      canMatch(player1, p)
+  // Generate a fair 2v2 match
+  const generateMatch = () => {
+    const playingPlayerIds = getPlayersCurrentlyPlaying();
+
+    const availablePlayers = players.filter(
+      (p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id)
     );
 
-    if (compatibleOpponents.length === 0) {
-      alert("No compatible opponents found! Try resetting recent opponents.");
+    if (availablePlayers.length < 4) {
+      alert("Need at least 4 players to generate a 2v2 match!");
       return;
     }
 
-    // Select second player from compatible opponents using weighted random
-    const player2 = weightedRandomSelect(compatibleOpponents);
+    // Generate all possible teams
+    const possibleTeams = generatePossibleTeams(availablePlayers);
+
+    if (possibleTeams.length < 2) {
+      alert(
+        "Not enough valid team combinations! Try resetting recent teammates/opponents."
+      );
+      return;
+    }
+
+    // Try to find compatible teams
+    let team1 = null;
+    let team2 = null;
+    let attempts = 0;
+    const maxAttempts = 100;
+
+    while (attempts < maxAttempts && (!team1 || !team2)) {
+      // Select first team using weighted random
+      const team1Index = Math.floor(Math.random() * possibleTeams.length);
+      team1 = possibleTeams[team1Index];
+
+      // Find compatible opposing teams
+      const compatibleTeams = possibleTeams.filter((team) => {
+        // Make sure teams don't share players
+        const team1PlayerIds = [team1.player1.id, team1.player2.id];
+        const team2PlayerIds = [team.player1.id, team.player2.id];
+        const hasSharedPlayers = team1PlayerIds.some((id) =>
+          team2PlayerIds.includes(id)
+        );
+
+        return !hasSharedPlayers && canTeamsPlay(team1, team);
+      });
+
+      if (compatibleTeams.length > 0) {
+        const team2Index = Math.floor(Math.random() * compatibleTeams.length);
+        team2 = compatibleTeams[team2Index];
+        break;
+      }
+
+      attempts++;
+    }
+
+    if (!team1 || !team2) {
+      alert(
+        "Could not find compatible teams! Try resetting recent teammates/opponents."
+      );
+      return;
+    }
 
     // Create match
     const newMatch = {
       id: matches.length + 1,
-      player1: player1.name,
-      player2: player2.name,
-      skillDiff: Math.abs(player1.skill - player2.skill),
+      team1: {
+        player1: team1.player1.name,
+        player2: team1.player2.name,
+        skill: team1.skill,
+      },
+      team2: {
+        player1: team2.player1.name,
+        player2: team2.player2.name,
+        skill: team2.skill,
+      },
+      skillDiff: Math.abs(team1.skill - team2.skill),
       timestamp: new Date().toLocaleTimeString(),
       completed: false,
     };
@@ -103,34 +316,139 @@ const App = () => {
   };
 
   // Complete a match and update player stats
-  const completeMatch = (matchId, winner) => {
+  const completeMatch = (matchId, winningTeam) => {
     const match = matches.find((m) => m.id === matchId);
     if (!match) return;
 
-    // Update players' times played and recent opponents
+    const allMatchPlayers = [
+      match.team1.player1,
+      match.team1.player2,
+      match.team2.player1,
+      match.team2.player2,
+    ];
+
+    // Update players' times played, recent teammates, and recent opponents
     const updatedPlayers = players.map((player) => {
-      if (player.name === match.player1) {
+      if (allMatchPlayers.includes(player.name)) {
+        let newRecentTeammates = [...player.recentTeammates];
+        let newRecentOpponents = [...player.recentOpponents];
+
+        // Update teammates
+        if (match.team1.player1 === player.name) {
+          const teammateId = players.find(
+            (p) => p.name === match.team1.player2
+          )?.id;
+          if (teammateId) {
+            newRecentTeammates = [
+              ...newRecentTeammates.filter((id) => id !== teammateId),
+              teammateId,
+            ].slice(-2);
+          }
+          // Update opponents
+          const opponent1Id = players.find(
+            (p) => p.name === match.team2.player1
+          )?.id;
+          const opponent2Id = players.find(
+            (p) => p.name === match.team2.player2
+          )?.id;
+          if (opponent1Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent1Id),
+              opponent1Id,
+            ];
+          if (opponent2Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent2Id),
+              opponent2Id,
+            ];
+        } else if (match.team1.player2 === player.name) {
+          const teammateId = players.find(
+            (p) => p.name === match.team1.player1
+          )?.id;
+          if (teammateId) {
+            newRecentTeammates = [
+              ...newRecentTeammates.filter((id) => id !== teammateId),
+              teammateId,
+            ].slice(-2);
+          }
+          // Update opponents
+          const opponent1Id = players.find(
+            (p) => p.name === match.team2.player1
+          )?.id;
+          const opponent2Id = players.find(
+            (p) => p.name === match.team2.player2
+          )?.id;
+          if (opponent1Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent1Id),
+              opponent1Id,
+            ];
+          if (opponent2Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent2Id),
+              opponent2Id,
+            ];
+        } else if (match.team2.player1 === player.name) {
+          const teammateId = players.find(
+            (p) => p.name === match.team2.player2
+          )?.id;
+          if (teammateId) {
+            newRecentTeammates = [
+              ...newRecentTeammates.filter((id) => id !== teammateId),
+              teammateId,
+            ].slice(-2);
+          }
+          // Update opponents
+          const opponent1Id = players.find(
+            (p) => p.name === match.team1.player1
+          )?.id;
+          const opponent2Id = players.find(
+            (p) => p.name === match.team1.player2
+          )?.id;
+          if (opponent1Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent1Id),
+              opponent1Id,
+            ];
+          if (opponent2Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent2Id),
+              opponent2Id,
+            ];
+        } else if (match.team2.player2 === player.name) {
+          const teammateId = players.find(
+            (p) => p.name === match.team2.player1
+          )?.id;
+          if (teammateId) {
+            newRecentTeammates = [
+              ...newRecentTeammates.filter((id) => id !== teammateId),
+              teammateId,
+            ].slice(-2);
+          }
+          // Update opponents
+          const opponent1Id = players.find(
+            (p) => p.name === match.team1.player1
+          )?.id;
+          const opponent2Id = players.find(
+            (p) => p.name === match.team1.player2
+          )?.id;
+          if (opponent1Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent1Id),
+              opponent1Id,
+            ];
+          if (opponent2Id)
+            newRecentOpponents = [
+              ...newRecentOpponents.filter((id) => id !== opponent2Id),
+              opponent2Id,
+            ];
+        }
+
         return {
           ...player,
           timesPlayed: player.timesPlayed + 1,
-          recentOpponents: [
-            ...player.recentOpponents.filter(
-              (id) => players.find((p) => p.id === id)?.name !== match.player2
-            ),
-            players.find((p) => p.name === match.player2)?.id,
-          ].slice(-2), // Keep only last 2 opponents
-        };
-      }
-      if (player.name === match.player2) {
-        return {
-          ...player,
-          timesPlayed: player.timesPlayed + 1,
-          recentOpponents: [
-            ...player.recentOpponents.filter(
-              (id) => players.find((p) => p.id === id)?.name !== match.player1
-            ),
-            players.find((p) => p.name === match.player1)?.id,
-          ].slice(-2), // Keep only last 2 opponents
+          recentTeammates: newRecentTeammates.slice(-2),
+          recentOpponents: newRecentOpponents.slice(-3), // Keep last 3 opponents
         };
       }
       return player;
@@ -140,7 +458,7 @@ const App = () => {
 
     // Mark match as completed
     const updatedMatches = matches.map((m) =>
-      m.id === matchId ? { ...m, completed: true, winner } : m
+      m.id === matchId ? { ...m, completed: true, winner: winningTeam } : m
     );
     setMatches(updatedMatches);
   };
@@ -154,6 +472,7 @@ const App = () => {
       name: newPlayer.name,
       skill: parseInt(newPlayer.skill),
       timesPlayed: 0,
+      recentTeammates: [],
       recentOpponents: [],
     };
 
@@ -167,10 +486,11 @@ const App = () => {
     setPlayers(players.filter((p) => p.id !== id));
   };
 
-  // Reset all recent opponents
+  // Reset all recent teammates and opponents
   const resetRecentOpponents = () => {
     const updatedPlayers = players.map((player) => ({
       ...player,
+      recentTeammates: [],
       recentOpponents: [],
     }));
     setPlayers(updatedPlayers);
@@ -188,10 +508,10 @@ const App = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2 flex items-center justify-center gap-3">
             <Trophy className="text-yellow-500" />
-            Badminton Match Maker
+            2v2 Badminton Match Maker
           </h1>
           <p className="text-gray-600">
-            Fair matches based on skill level and play frequency
+            Fair team matches based on skill level and play frequency
           </p>
         </div>
 
@@ -203,7 +523,7 @@ const App = () => {
               className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
             >
               <Play size={20} />
-              Generate Match
+              Generate 2v2 Match
             </button>
 
             <button
@@ -219,7 +539,7 @@ const App = () => {
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-6 py-3 rounded-lg flex items-center gap-2 transition-colors"
             >
               <RotateCcw size={20} />
-              Reset Recent Opponents
+              Reset Recent History
             </button>
 
             <button
@@ -345,37 +665,55 @@ const App = () => {
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
-                      <div className="font-medium">
-                        {match.player1} vs {match.player2}
+                      <div className="font-medium text-sm">
+                        <div className="mb-1">
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">
+                            Team 1 (Avg: {match.team1.skill.toFixed(1)})
+                          </span>
+                          <span className="ml-2">
+                            {match.team1.player1} & {match.team1.player2}
+                          </span>
+                        </div>
+                        <div className="text-center text-gray-500 text-xs">
+                          VS
+                        </div>
+                        <div className="mt-1">
+                          <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs">
+                            Team 2 (Avg: {match.team2.skill.toFixed(1)})
+                          </span>
+                          <span className="ml-2">
+                            {match.team2.player1} & {match.team2.player2}
+                          </span>
+                        </div>
                       </div>
                       <div className="text-sm text-gray-500">
                         {match.timestamp}
                       </div>
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
-                      Skill Difference: {match.skillDiff}
+                      Skill Difference: {match.skillDiff.toFixed(1)}
                     </div>
 
                     {!match.completed && (
                       <div className="flex gap-2">
                         <button
-                          onClick={() => completeMatch(match.id, match.player1)}
+                          onClick={() => completeMatch(match.id, "team1")}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
                         >
-                          {match.player1} Won
+                          Team 1 Won
                         </button>
                         <button
-                          onClick={() => completeMatch(match.id, match.player2)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                          onClick={() => completeMatch(match.id, "team2")}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm"
                         >
-                          {match.player2} Won
+                          Team 2 Won
                         </button>
                       </div>
                     )}
 
                     {match.completed && (
                       <div className="text-sm text-green-600 font-medium">
-                        Winner: {match.winner}
+                        Winner: {match.winner === "team1" ? "Team 1" : "Team 2"}
                       </div>
                     )}
                   </div>
@@ -383,7 +721,7 @@ const App = () => {
 
               {matches.length === 0 && (
                 <div className="text-center text-gray-500 py-8">
-                  No matches generated yet. Click "Generate Match" to start!
+                  No matches generated yet. Click "Generate 2v2 Match" to start!
                 </div>
               )}
             </div>
