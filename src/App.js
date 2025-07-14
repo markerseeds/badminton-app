@@ -6,7 +6,7 @@ const App = () => {
     {
       id: 1,
       name: "Mark",
-      skill: 3,
+      skill: 5,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -14,7 +14,7 @@ const App = () => {
     {
       id: 2,
       name: "Charles",
-      skill: 3,
+      skill: 6,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -22,7 +22,7 @@ const App = () => {
     {
       id: 3,
       name: "Mau",
-      skill: 1,
+      skill: 2,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -46,7 +46,7 @@ const App = () => {
     {
       id: 6,
       name: "Matthew",
-      skill: 2,
+      skill: 3,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -54,7 +54,7 @@ const App = () => {
     {
       id: 7,
       name: "Aaron",
-      skill: 3,
+      skill: 5,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -62,7 +62,7 @@ const App = () => {
     {
       id: 8,
       name: "Camille",
-      skill: 2,
+      skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -70,7 +70,7 @@ const App = () => {
     {
       id: 9,
       name: "Sugar",
-      skill: 3,
+      skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -78,7 +78,7 @@ const App = () => {
     {
       id: 10,
       name: "Raizza",
-      skill: 3,
+      skill: 5,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -94,7 +94,7 @@ const App = () => {
     {
       id: 12,
       name: "Carla",
-      skill: 2,
+      skill: 3,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -102,7 +102,7 @@ const App = () => {
     {
       id: 13,
       name: "Allen",
-      skill: 3,
+      skill: 5,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -110,7 +110,7 @@ const App = () => {
     {
       id: 14,
       name: "Corinne",
-      skill: 3,
+      skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -118,15 +118,15 @@ const App = () => {
     {
       id: 15,
       name: "Marion",
-      skill: 4,
+      skill: 8,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
     },
     {
       id: 16,
-      name: "Kenzo",
-      skill: 3,
+      name: "JM",
+      skill: 7,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
