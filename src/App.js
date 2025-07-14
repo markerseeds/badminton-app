@@ -226,8 +226,16 @@ const App = () => {
   const generateMatch = () => {
     const playingPlayerIds = getPlayersCurrentlyPlaying();
 
+    // Find the max times played among all players
+    const maxTimesPlayed = Math.max(...players.map((p) => p.timesPlayed));
+
     const availablePlayers = players
-      .filter((p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id))
+      .filter(
+        (p) =>
+          p.name.trim() !== "" &&
+          !playingPlayerIds.has(p.id) &&
+          p.timesPlayed < maxTimesPlayed // exclude players with max timesPlayed
+      )
       .sort((a, b) => a.timesPlayed - b.timesPlayed);
 
     if (availablePlayers.length < 4) {
