@@ -229,12 +229,22 @@ const App = () => {
     // Find the max times played among all players
     const maxTimesPlayed = Math.max(...players.map((p) => p.timesPlayed));
 
+    // Find all players with max times played
+    const maxPlayedPlayers = players.filter(
+      (p) => p.timesPlayed === maxTimesPlayed
+    );
+
+    // Randomly select one player to exclude
+    const playerToExclude =
+      maxPlayedPlayers[Math.floor(Math.random() * maxPlayedPlayers.length)];
+
+    // Filter available players: not currently playing, not empty name, and exclude only the selected player
     const availablePlayers = players
       .filter(
         (p) =>
           p.name.trim() !== "" &&
           !playingPlayerIds.has(p.id) &&
-          p.timesPlayed < maxTimesPlayed // exclude players with max timesPlayed
+          p.id !== playerToExclude.id // exclude only this one player
       )
       .sort((a, b) => a.timesPlayed - b.timesPlayed);
 
