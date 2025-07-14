@@ -628,12 +628,12 @@ const App = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-1">
-                    Skill Level (1-10)
+                    Skill Level (1-5)
                   </label>
                   <input
                     type="number"
                     min="1"
-                    max="10"
+                    max="5"
                     value={newPlayer.skill}
                     onChange={(e) =>
                       setNewPlayer({ ...newPlayer, skill: e.target.value })
