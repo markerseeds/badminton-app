@@ -22,7 +22,7 @@ const App = () => {
     {
       id: 3,
       name: "Mau",
-      skill: 2,
+      skill: 1,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
