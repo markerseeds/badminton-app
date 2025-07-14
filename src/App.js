@@ -156,7 +156,7 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 18,
+      id: 20,
       name: "Riana",
       skill: 6,
       timesPlayed: 0,
