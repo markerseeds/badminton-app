@@ -123,7 +123,7 @@ const App = () => {
 
   // Calculate weight for fair distribution (inverse of times played)
   const calculateWeight = (timesPlayed) => {
-    return 1 / (timesPlayed + 1);
+    return Math.pow(0.5, timesPlayed); // halves weight each time played
   };
 
   // Calculate team skill average
@@ -152,7 +152,7 @@ const App = () => {
     const team1Skill = getTeamSkill(team1.player1, team1.player2);
     const team2Skill = getTeamSkill(team2.player1, team2.player2);
     const skillDiff = Math.abs(team1Skill - team2Skill);
-    if (skillDiff >= 1) return false;
+    if (skillDiff >= 1.5) return false;
 
     // Check if any player has played against any player from the other team recently
     const team1Players = [team1.player1, team1.player2];
@@ -216,6 +216,9 @@ const App = () => {
         const player1 = availablePlayers[i];
         const player2 = availablePlayers[j];
 
+        // Only pair players with similar play counts (difference <= 2)
+        if (Math.abs(player1.timesPlayed - player2.timesPlayed) > 2) continue;
+
         if (canBeTeammates(player1, player2)) {
           teams.push({
             player1,
@@ -236,9 +239,9 @@ const App = () => {
   const generateMatch = () => {
     const playingPlayerIds = getPlayersCurrentlyPlaying();
 
-    const availablePlayers = players.filter(
-      (p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id)
-    );
+    const availablePlayers = players
+      .filter((p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id))
+      .sort((a, b) => a.timesPlayed - b.timesPlayed);
 
     if (availablePlayers.length < 4) {
       alert("Need at least 4 players to generate a 2v2 match!");
@@ -263,8 +266,21 @@ const App = () => {
 
     while (attempts < maxAttempts && (!team1 || !team2)) {
       // Select first team using weighted random
-      const team1Index = Math.floor(Math.random() * possibleTeams.length);
-      team1 = possibleTeams[team1Index];
+      // Calculate total weight of all possible teams
+      const totalWeight = possibleTeams.reduce(
+        (sum, team) => sum + team.weight,
+        0
+      );
+
+      // Weighted random selection for team1
+      let random = Math.random() * totalWeight;
+      for (let team of possibleTeams) {
+        random -= team.weight;
+        if (random <= 0) {
+          team1 = team;
+          break;
+        }
+      }
 
       // Find compatible opposing teams
       const compatibleTeams = possibleTeams.filter((team) => {
