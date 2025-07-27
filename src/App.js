@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Users, Play, Trophy, RotateCcw, Plus, Trash2 } from "lucide-react";
 
 const App = () => {
@@ -104,6 +104,25 @@ const App = () => {
   const [matches, setMatches] = useState([]);
   const [newPlayer, setNewPlayer] = useState({ name: "", skill: 5 });
   const [showAddPlayer, setShowAddPlayer] = useState(false);
+
+  // Reset all recent teammates and opponents
+  const resetRecentOpponents = useCallback(() => {
+    const updatedPlayers = players.map((player) => ({
+      ...player,
+      recentTeammates: [],
+      recentOpponents: [],
+    }));
+    setPlayers(updatedPlayers);
+  }, [players]);
+
+  useEffect(() => {
+    const completedCount = matches.filter((m) => m.completed).length;
+
+    // Run reset after every 4 completed matches
+    if (completedCount > 0 && completedCount % 4 === 0) {
+      resetRecentOpponents();
+    }
+  }, [matches, resetRecentOpponents]);
 
   // Calculate weight for fair distribution (inverse of times played)
   const calculateWeight = (timesPlayed, minTimesPlayed) => {
@@ -507,16 +526,6 @@ const App = () => {
   // Remove player
   const removePlayer = (id) => {
     setPlayers(players.filter((p) => p.id !== id));
-  };
-
-  // Reset all recent teammates and opponents
-  const resetRecentOpponents = () => {
-    const updatedPlayers = players.map((player) => ({
-      ...player,
-      recentTeammates: [],
-      recentOpponents: [],
-    }));
-    setPlayers(updatedPlayers);
   };
 
   // Clear all matches
