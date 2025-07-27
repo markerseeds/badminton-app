@@ -674,7 +674,7 @@ const App = () => {
                       <div className="flex items-center gap-3">
                         <span className="font-medium">{player.name}</span>
                         <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Skill: {player.skill}
+                          Placement: {player.skill}
                         </span>
                         <label className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-2">
                           Played:
@@ -751,7 +751,7 @@ const App = () => {
                       </div>
                     </div>
                     <div className="text-sm text-gray-600 mb-2">
-                      Skill Difference: {match.skillDiff.toFixed(1)}
+                      Team Difference: {match.skillDiff.toFixed(1)}
                     </div>
 
                     {!match.completed && (
