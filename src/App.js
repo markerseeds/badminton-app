@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Users, Play, Trophy, RotateCcw, Plus, Trash2 } from "lucide-react";
 
 const App = () => {
@@ -29,102 +29,14 @@ const App = () => {
     },
     {
       id: 4,
-      name: "Kevin",
-      skill: 1,
+      name: "Kelvin",
+      skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
     },
     {
       id: 5,
-      name: "Faith",
-      skill: 1,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 6,
-      name: "Matthew",
-      skill: 3,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 7,
-      name: "Aaron",
-      skill: 5,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 8,
-      name: "Camille",
-      skill: 4,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 9,
-      name: "Sugar",
-      skill: 4,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 10,
-      name: "Raizza",
-      skill: 5,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 11,
-      name: "Danika",
-      skill: 1,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 12,
-      name: "Carla",
-      skill: 3,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 13,
-      name: "Allen",
-      skill: 5,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 14,
-      name: "Corinne",
-      skill: 4,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 15,
-      name: "Marion",
-      skill: 8,
-      timesPlayed: 0,
-      recentTeammates: [],
-      recentOpponents: [],
-    },
-    {
-      id: 16,
       name: "JM",
       skill: 7,
       timesPlayed: 0,
@@ -132,33 +44,57 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 17,
-      name: "Melvin",
-      skill: 8,
+      id: 6,
+      name: "Hanzel",
+      skill: 6,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
     },
     {
-      id: 18,
-      name: "Korby",
+      id: 7,
+      name: "Corinne",
       skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
     },
     {
-      id: 19,
-      name: "Kenzo",
+      id: 8,
+      name: "Riana",
+      skill: 6,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 9,
+      name: "Aaron",
       skill: 5,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
     },
     {
-      id: 20,
-      name: "Riana",
-      skill: 6,
+      id: 10,
+      name: "Korby",
+      skill: 5,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 11,
+      name: "Faith",
+      skill: 1,
+      timesPlayed: 0,
+      recentTeammates: [],
+      recentOpponents: [],
+    },
+    {
+      id: 12,
+      name: "Jershy",
+      skill: 4,
       timesPlayed: 0,
       recentTeammates: [],
       recentOpponents: [],
@@ -202,7 +138,7 @@ const App = () => {
     const team1Skill = getTeamSkill(team1.player1, team1.player2);
     const team2Skill = getTeamSkill(team2.player1, team2.player2);
     const skillDiff = Math.abs(team1Skill - team2Skill);
-    if (skillDiff >= 1.0) return false;
+    if (skillDiff >= 6) return false;
 
     // Check if any player has played against any player from the other team recently
     const team1Players = [team1.player1, team1.player2];
@@ -274,44 +210,46 @@ const App = () => {
   const generateMatch = () => {
     const playingPlayerIds = getPlayersCurrentlyPlaying();
 
-    // Find the max times played among all players
     const maxTimesPlayed = Math.max(...players.map((p) => p.timesPlayed));
 
-    // Find all players with max times played
-    const maxPlayedPlayers = players.filter(
-      (p) => p.timesPlayed === maxTimesPlayed
-    );
+    let availablePlayers;
 
-    // Randomly select one player to exclude
-    const playerToExclude =
-      maxPlayedPlayers[Math.floor(Math.random() * maxPlayedPlayers.length)];
+    if (maxTimesPlayed === 0) {
+      // All players have 0 timesPlayed, so do NOT exclude any player
+      availablePlayers = players
+        .filter((p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id))
+        .sort((a, b) => a.timesPlayed - b.timesPlayed);
+    } else {
+      // Exclude all players who have max times played
+      availablePlayers = players
+        .filter(
+          (p) =>
+            p.name.trim() !== "" &&
+            !playingPlayerIds.has(p.id) &&
+            p.timesPlayed < maxTimesPlayed
+        )
+        .sort((a, b) => a.timesPlayed - b.timesPlayed);
 
-    // Filter available players: not currently playing, not empty name, and exclude only the selected player
-    const availablePlayers = players
-      .filter(
-        (p) =>
-          p.name.trim() !== "" &&
-          !playingPlayerIds.has(p.id) &&
-          p.id !== playerToExclude.id // exclude only this one player
-      )
-      .sort((a, b) => a.timesPlayed - b.timesPlayed);
+      // If fewer than 4 players after exclusion, fall back to including all available players
+      if (availablePlayers.length < 4) {
+        availablePlayers = players
+          .filter((p) => p.name.trim() !== "" && !playingPlayerIds.has(p.id))
+          .sort((a, b) => a.timesPlayed - b.timesPlayed);
+      }
+    }
 
     if (availablePlayers.length < 4) {
-      alert("Need at least 4 players to generate a 2v2 match!");
+      alert("Need at least 4 available players to generate a 2v2 match!");
       return;
     }
 
-    // Find minimum times played among available players
     const minTimesPlayed = Math.min(
       ...availablePlayers.map((p) => p.timesPlayed)
     );
-
-    // Players who must be included (minimum times played)
     const mustIncludePlayers = availablePlayers.filter(
       (p) => p.timesPlayed === minTimesPlayed
     );
 
-    // Generate all possible teams
     const possibleTeams = generatePossibleTeams(availablePlayers);
 
     if (possibleTeams.length < 2) {
@@ -327,12 +265,11 @@ const App = () => {
     const maxAttempts = 100;
 
     while (attempts < maxAttempts && (!team1 || !team2)) {
-      // Weighted random selection for team1, but only teams that include at least one mustIncludePlayer
-      const filteredTeamsForTeam1 = possibleTeams.filter((team) => {
-        return mustIncludePlayers.some(
+      const filteredTeamsForTeam1 = possibleTeams.filter((team) =>
+        mustIncludePlayers.some(
           (p) => p.id === team.player1.id || p.id === team.player2.id
-        );
-      });
+        )
+      );
 
       if (filteredTeamsForTeam1.length === 0) {
         alert(
@@ -341,7 +278,6 @@ const App = () => {
         return;
       }
 
-      // Calculate total weight of filtered teams
       const totalWeight = filteredTeamsForTeam1.reduce(
         (sum, team) => sum + team.weight,
         0
@@ -356,7 +292,6 @@ const App = () => {
         }
       }
 
-      // Find compatible opposing teams (no shared players and canTeamsPlay)
       const compatibleTeams = possibleTeams.filter((team) => {
         const team1PlayerIds = [team1.player1.id, team1.player2.id];
         const team2PlayerIds = [team.player1.id, team.player2.id];
@@ -589,6 +524,19 @@ const App = () => {
     setMatches([]);
   };
 
+  const updateTimesPlayed = (id, newTimesPlayed) => {
+    const updatedPlayers = players.map((player) => {
+      if (player.id === id) {
+        return {
+          ...player,
+          timesPlayed: Math.max(0, parseInt(newTimesPlayed) || 0), // Ensures non-negative integer
+        };
+      }
+      return player;
+    });
+    setPlayers(updatedPlayers);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
@@ -719,9 +667,18 @@ const App = () => {
                         <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
                           Skill: {player.skill}
                         </span>
-                        <span className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded">
-                          Played: {player.timesPlayed}
-                        </span>
+                        <label className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-2">
+                          Played:
+                          <input
+                            type="number"
+                            min="0"
+                            className="w-16 bg-green-50 border border-green-300 rounded px-1 text-center text-green-800 focus:outline-none focus:ring-1 focus:ring-green-400"
+                            value={player.timesPlayed}
+                            onChange={(e) =>
+                              updateTimesPlayed(player.id, e.target.value)
+                            }
+                          />
+                        </label>
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
                         Selection Weight: {(weight * 100).toFixed(1)}%
