@@ -537,6 +537,22 @@ const App = () => {
     setPlayers(updatedPlayers);
   };
 
+  const updateSkill = (id, newSkill) => {
+    const updatedPlayers = players.map((player) => {
+      if (player.id === id) {
+        let skillNum = parseInt(newSkill);
+        if (isNaN(skillNum)) skillNum = player.skill;
+        skillNum = Math.min(Math.max(skillNum, 1), 8); // Clamp between 1 to 8
+        return {
+          ...player,
+          skill: skillNum,
+        };
+      }
+      return player;
+    });
+    setPlayers(updatedPlayers);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
@@ -664,11 +680,30 @@ const App = () => {
                     <div className="flex-1">
                       <div className="flex items-center gap-3">
                         <span className="font-medium">{player.name}</span>
-                        <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Division: {player.skill}
-                        </span>
-                        <label className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="1"
+                          max="8"
+                          value={player.skill}
+                          onChange={(e) =>
+                            updateSkill(player.id, e.target.value)
+                          }
+                          className="w-16 p-1 text-center bg-blue-50 border border-blue-300 rounded text-blue-800 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                        />
+
+                        <label className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-1">
                           Played:
+                          <button
+                            onClick={() =>
+                              updateTimesPlayed(
+                                player.id,
+                                player.timesPlayed - 1
+                              )
+                            }
+                            className="bg-green-300 hover:bg-green-400 text-green-900 px-1 rounded select-none"
+                          >
+                            -
+                          </button>
                           <input
                             type="number"
                             min="0"
@@ -678,6 +713,17 @@ const App = () => {
                               updateTimesPlayed(player.id, e.target.value)
                             }
                           />
+                          <button
+                            onClick={() =>
+                              updateTimesPlayed(
+                                player.id,
+                                player.timesPlayed + 1
+                              )
+                            }
+                            className="bg-green-300 hover:bg-green-400 text-green-900 px-1 rounded select-none"
+                          >
+                            +
+                          </button>
                         </label>
                       </div>
                       <div className="text-xs text-gray-500 mt-1">
