@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState } from "react";
 import { Users, Play, Trophy, RotateCcw, Plus, Trash2 } from "lucide-react";
 
 const App = () => {
@@ -105,25 +105,6 @@ const App = () => {
   const [newPlayer, setNewPlayer] = useState({ name: "", skill: 5 });
   const [showAddPlayer, setShowAddPlayer] = useState(false);
 
-  // Reset all recent teammates and opponents
-  const resetRecentOpponents = useCallback(() => {
-    const updatedPlayers = players.map((player) => ({
-      ...player,
-      recentTeammates: [],
-      recentOpponents: [],
-    }));
-    setPlayers(updatedPlayers);
-  }, [players]);
-
-  useEffect(() => {
-    const completedCount = matches.filter((m) => m.completed).length;
-
-    // Run reset after every 4 completed matches
-    if (completedCount > 0 && completedCount % 4 === 0) {
-      resetRecentOpponents();
-    }
-  }, [matches, resetRecentOpponents]);
-
   // Calculate weight for fair distribution (inverse of times played)
   const calculateWeight = (timesPlayed, minTimesPlayed) => {
     // The player(s) with minTimesPlayed get weight 1 (100%)
@@ -157,7 +138,7 @@ const App = () => {
     const team1Skill = getTeamSkill(team1.player1, team1.player2);
     const team2Skill = getTeamSkill(team2.player1, team2.player2);
     const skillDiff = Math.abs(team1Skill - team2Skill);
-    if (skillDiff >= 2.5) return false;
+    if (skillDiff >= 2) return false;
 
     // Check if any player has played against any player from the other team recently
     const team1Players = [team1.player1, team1.player2];
@@ -523,6 +504,16 @@ const App = () => {
     setShowAddPlayer(false);
   };
 
+  // Reset all recent teammates and opponents
+  const resetRecentOpponents = () => {
+    const updatedPlayers = players.map((player) => ({
+      ...player,
+      recentTeammates: [],
+      recentOpponents: [],
+    }));
+    setPlayers(updatedPlayers);
+  };
+
   // Remove player
   const removePlayer = (id) => {
     setPlayers(players.filter((p) => p.id !== id));
@@ -674,7 +665,7 @@ const App = () => {
                       <div className="flex items-center gap-3">
                         <span className="font-medium">{player.name}</span>
                         <span className="text-sm bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Placement: {player.skill}
+                          Division: {player.skill}
                         </span>
                         <label className="text-sm bg-green-100 text-green-800 px-2 py-1 rounded flex items-center gap-2">
                           Played:
