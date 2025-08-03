@@ -148,7 +148,7 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 18,
+      id: 19,
       name: "Steph",
       skill: 3,
       timesPlayed: 0,
@@ -156,7 +156,7 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 19,
+      id: 20,
       name: "Raizza",
       skill: 5,
       timesPlayed: 0,
@@ -164,7 +164,7 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 20,
+      id: 21,
       name: "Martin",
       skill: 4,
       timesPlayed: 0,
@@ -172,7 +172,7 @@ const App = () => {
       recentOpponents: [],
     },
     {
-      id: 21,
+      id: 22,
       name: "Allen",
       skill: 5,
       timesPlayed: 0,
