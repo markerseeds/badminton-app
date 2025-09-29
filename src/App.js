@@ -218,7 +218,7 @@ const App = () => {
     const team1Skill = getTeamSkill(team1.player1, team1.player2);
     const team2Skill = getTeamSkill(team2.player1, team2.player2);
     const skillDiff = Math.abs(team1Skill - team2Skill);
-    if (skillDiff >= 2) return false;
+    if (skillDiff >= 1.5) return false;
 
     // Check if any player has played against any player from the other team recently
     const team1Players = [team1.player1, team1.player2];
